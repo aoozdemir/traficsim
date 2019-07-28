@@ -5,7 +5,7 @@
             "includePath": [
                 "usr/include",
                 "/usr/local/include",
-                "/usr/local/Cellar/opencv/4.1.0_2/include",
+                "/usr/local/Cellar/opencv/4.1.0_2/include/opencv4",
                 "${workspaceRoot}",
                 "${workspaceRoot}/include"
             ],
@@ -15,6 +15,7 @@
                 "path": [
                     "usr/include",
                     "/usr/local/include",
+                    "/usr/local/Cellar/opencv/4.1.0_2/include/opencv4",
                     "${workspaceRoot}",
                     "${workspaceRoot}/include"
                 ],
