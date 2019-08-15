@@ -40,12 +40,11 @@ void TrafficLight::waitForGreen() {
     // Once it receives TrafficLightPhase::green, the method returns.
     while (true) {
         auto message = _msg_queue->receive();
-        if (message == TrafficLightPhase::green)
-            return;
+        if (message == TrafficLightPhase::green) return;
     }
 }
 
-TrafficLightPhase TrafficLight::getCurrentPhase() const {
+TrafficLightPhase TrafficLight::getCurrentPhase() {
     return _currentPhase;
 }
 
@@ -67,24 +66,25 @@ void TrafficLight::cycleThroughPhases() {
 
     auto last = std::chrono::system_clock::now();
 
-    std::unique_lock<std::mutex> cycle_thread(_mutex);
-    cycle_thread.unlock();
+    std::unique_lock<std::mutex> lck(_mtx);
+    std::cout << "Traffic_Light #" << _id << "::Cycle_Through_Phases: thread id = " << std::this_thread::get_id() << std::endl;
+
+    lck.unlock();
 
     while (true) {
         long time_diff = std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::system_clock::now() - last).count();
 
         if (time_diff >= cycle_duration) {
+            cycle_duration = distr(gen);
+            last = std::chrono::system_clock::now();
+
             if (getCurrentPhase() == TrafficLightPhase::red) {
                 _currentPhase = TrafficLightPhase::green;
             } else {
                 _currentPhase = TrafficLightPhase::red;
             }
 
-            auto is_sent = std::async(std::launch::async, &MessageQueue<TrafficLightPhase>::send, _msg_queue, std::move(_currentPhase));
-            is_sent.wait();
-
-            cycle_duration = distr(gen);
-            last = std::chrono::system_clock::now();
+            _msg_queue->send(std::move(_currentPhase));
         }
     }
 }

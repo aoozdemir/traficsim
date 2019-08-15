@@ -37,13 +37,13 @@ enum TrafficLightPhase {
     green
 };
 
-class TrafficLight {
+class TrafficLight : public TrafficObject {
    public:
     // constructor / desctructor
     TrafficLight();
 
     // getters / setters
-    TrafficLightPhase getCurrentPhase() const;
+    TrafficLightPhase getCurrentPhase();
 
     // typical behaviour methods
     void waitForGreen();
@@ -56,10 +56,9 @@ class TrafficLight {
     // FP.4b : create a private member of type MessageQueue for messages of type TrafficLightPhase
     // and use it within the infinite loop to push each new TrafficLightPhase into it by calling
     // send in conjunction with move semantics.
-    std::shared_ptr<MessageQueue<TrafficLightPhase>> _msg_queue;
+    std::shared_ptr<MessageQueue<TrafficLightPhase>> _msg_queue{new MessageQueue<TrafficLightPhase>};
     TrafficLightPhase _currentPhase;
     std::condition_variable _condition;
-    std::vector<std::thread> threads;
     std::mutex _mutex;
 };
 
